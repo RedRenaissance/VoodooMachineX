@@ -1,0 +1,150 @@
+////////////////////////////////////////////////////////////////////////////////////////
+vxProcessIncluded = false;
+////////////////////////////////////////////////////////////////////////////////////////
+function vxProcess(x)
+{
+	this.vxType = "vxProcess";
+	if(x instanceof Number)
+		this.id = x;
+	else
+	{
+		try
+		{
+			this.id = _vxp_create_();
+		}
+		catch(err)
+		{
+			vxErrorMessage(err);
+		}
+		if(!this.id)
+			throw new Error("thread allocation failed in vxProcess constructor");
+		_vxp_pass_string_(this.id, "vxProgramDir", vxProgramDir);
+	}
+	return this;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxProcess.prototype.destroy = function()
+{
+	if(this.id)
+	{
+		try
+		{
+			_vxp_destroy_(this.id);
+		}
+		catch(err)
+		{
+			vxErrorMessage(err);
+		}
+		this.id = 0;
+	}
+	return this;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxProcess.prototype.run = function(s)
+{
+	if(!this.id)
+		throw new Error("thread is non-existant in vxProcess.run");
+	
+	if(s) this.loadup(s);
+	
+	var _o_ = null;
+	try
+	{
+		_o_ = _vxp_run_(this.id);
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+	return _o_;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxProcess.prototype.loadup = function(s)
+{
+	if(!s) throw new Error("Cannot load NULL into a thread in vxProcess.loadup");
+	else if(!this.id) throw new Error("thread is non-existant in vxProcess.loadup");
+	
+	try
+	{
+		_vxp_loadup_(this.id, s);
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+	return this;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxProcess.prototype.isActive = function()
+{
+	var _o_ = false;
+	
+	try
+	{
+		_o_ = _vxp_is_active_(this.id);
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+	return _o_;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxProcess.prototype.passString = function(s, x)
+{
+	if(!s) throw new Error("cannot push NULL in vxProcess.passString");
+	try
+	{
+		_vxp_pass_string_(this.id, s, x);
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+	return this;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxProcess.prototype.passUint = function(s, x)
+{
+	if(!s) throw new Error("cannot push NULL in vxProcess.passUint");
+	try
+	{
+		_vxp_pass_uint_(this.id, s, x);
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+	return this;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxProcess.prototype.passInt = function(s, x)
+{
+	if(!s) throw new Error("cannot push NULL in vxProcess.passInt");
+	try
+	{
+		_vxp_pass_int_(this.id, s, x);
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+	return this;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxProcess.prototype.passByte = function(s, x)
+{
+	if(!s) throw new Error("cannot push NULL in vxProcess.passByte");
+	try
+	{
+		_vxp_pass_byte_(this.id, s, x);
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+	return this;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxProcessIncluded = true;
+////////////////////////////////////////////////////////////////////////////////////////

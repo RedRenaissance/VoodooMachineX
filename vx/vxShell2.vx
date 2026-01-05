@@ -1,0 +1,25 @@
+function vxShell2Out(_0xfdf412) {
+  var _0x4a5a84 = "<vxShell2: " + new Date().toString() + "> " + (_0xfdf412 ? _0xfdf412 : '');
+  try {
+    _vx_print_(_0x4a5a84, _vx_stdout_);
+  } catch (_0x1e44b3) {
+    vxErrorMessage(_0x1e44b3);
+  }
+}
+try {
+  var vxShell2Input = null;
+  _vx_conopen_();
+  _vxw_system_("color 02");
+  while (true) {
+    vxShell2Out();
+    vxShell2Input = _vx_read_(_vx_stdin_);
+    if (vxShell2Input.trim().startsWith('?')) {
+      _vxw_system_(vxShell2Input.substring(0x1).trim());
+    } else {
+      vxShell2Out(_vx_inline_(vxShell2Input) + "\n");
+    }
+  }
+  _vx_conclose_();
+} catch (_0x16a966) {
+  vxErrorMessage(_0x16a966);
+}

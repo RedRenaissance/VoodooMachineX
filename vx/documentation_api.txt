@@ -1,0 +1,563 @@
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			This is a documentation/readme about the standard api
+//			included with the VoodooMachineX.exe as extensionless files.
+//
+//			Author: Ruben Brouwer
+//
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			1.	What and why
+//
+It may be noted that since VoodooMachine.exe provides some functions as-is, without any
+necessary include statements, a second library or API might be redundant.
+The reasons for this are several. First of all, the functions are written in C, and either
+partially or completely mimic C standard library and Windows API calls. So for example
+reading a simple text file this way might look something like:
+
+			var myString = null
+			var myFile = _vx_fopen_(myDir, "r")
+			
+			while(myString = _vx_read_(myFile))
+			{
+				//Do something here.
+			}
+			_vx_fclose_(myFile_)
+			
+While this is of course possible, maybe even desirable in certain situations,
+The API written around the VoodooMachineX.exe provides easier and more intuitive ways
+to achieve such tasks, hiding a lot of the C style functionality from the user.
+Furthermore, since these "native" calls communicate directly to the machine,
+misuse or erroneous use, for example providing too few arguments to such functions,
+can cause unpredictable behaviour or program crashes.
+The extra library files provide a nice way of doing this in a modern object oriented style:
+
+			vxInclude("C://vx/vxFile")
+			
+			var myFile = new vxFile(myDir).open()
+			
+			doSomething(myFile.getText())
+			
+Similarly, a considerable part of typical WindowsAPI "boilerplate" code
+for writing graphical user interfaces has been hidden from the user.
+With aforementioned considerations in mind, each object is organised
+in its own extensionless file, by exatly the name of the object in question.
+For example vxFile in "vxFile", vxSound in "vxSound" for playing sound files,
+vxCon in "vxCon" which provides a console object, and so on and so forth.
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			2.	Importing the API
+//
+The VoodooMachineX.exe is, first of all, very simple at entry-point. It checks if arguments
+are given to the program, then it tries to open a flat-text file by that directory and execute it.
+It only assumes one file for entry point.
+If no arguments are given to the program, it will simply display a message box and quit.
+In order to do any real-world programming, however, it would of course be vital to be able to
+include/import certain functions and objects. It would be possible to write a script handling 
+a text file in a C-like manner, given the functionality provided, but since this would be
+cumbersome, a shortcut is provided in "_vx_include_" and "vxInclude", which are *exactly the same*,
+as it is only an alias.
+Note that they are *functions* and not special directives. They take a directory string as argument.
+Hence we could for example write:
+
+			vxInclude("C://vx/vxLib")
+			
+Here, the file "vxLib" will be grabbed from the directory, then, executed as javascript.
+VoodooMachineX does not have any special reading mode for this include statement,
+it reads it as any other code send through the interpreter. "vxLib" is a file simply including
+*all* other library files, as a simple shorthand.
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			3.	vxCon
+//
+The first and probably most primitive way of writing a program would of course be the console window,
+VoodooMachineX wouldn't be any fun if this wasn't possible!
+The File "vxCon" provides a console object with useful functions mapped into it.
+For example, the classic hello world program would for example be written as:
+
+			vxInclude("C://vx/vxCon")		//Read the file.
+			var con = new vxCon()			//Create a new console object
+			con.print("Hello, world!\n")	//Print the line "Hello, world!"
+			con.system("pause")				//Pause the program (wait for a keypress)
+			con.close()						//Close the console.
+
+Full constructor:
+	vxCon()
+
+The following functions are provided by the vxCon object:
+
+open
+	Opens the console. This is done by default at creation of the object,
+	but can be called again in the case it is closed in the meantime.
+	Takes no arguments.
+close
+	Closes the console. Takes no arguments.
+putChar
+	Puts a char through the standard output stream.
+getChar
+	Gets a char from the standard input stream.
+print
+	Prints a line to the standard output stream.
+	Takes one string as an argument in such a way that
+		myConsole.print("Hello, world!\n")
+	is equivalent to the C call
+		printf("Hello, world!\n")
+read
+	Reads a line from the standard input stream.
+	Takes no arguments.
+system
+	Makes a cmd call to the OS. Takes a string as an argument.
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			4.	vxFrame
+//
+Although the windows GUI functionality is still being expanded, the vxFrame object
+provides a nice way of writing GUI's while hiding the more cumbersome WindowsAPI calls.
+For example, a simple window loop would be written as:
+
+			vxInclude("C://vx/vxFrame")
+			
+			var myFrame = new vxFrame(caption, x, y, width, hight, style)
+			
+			myFrame.setVisible(true)
+			
+			while(myFrame.getMessage())
+			{
+				myFrame.handleMessage()
+				
+				if(myFrame.hasCloseMessage()) break
+			}
+			myFrame.destroy()
+
+An astute observer might note this functions indeed just "wrap" most of the Windows API
+specifics that go into creating such a frame and message loop, while being functionally equivalent.
+With objects explained later in this document, elements can be added such as a vxButton:
+
+		myFrame.add(myButton)
+
+With which we can write into the message loop:
+
+		if(myButton.isActivated())
+		{
+			//Do something.
+		}
+		
+Full constructor:
+			vxFrame(caption, x, y, width, height, style)
+The following functions are provided by the vxFrame object:
+
+getMessage
+	Returns the next message associated with this vxFrame.
+	Takes no arguments.
+sendMessage
+	Sends a message associated with this vxFrame.
+	Takes as arguments numbers that represent the message, the WPARAM and LPARAM respectively.
+translateMessage
+	Equivalent to windows TranslateMessage call. Takes no Arguments.
+dispatchMessage
+	Equivalent to windows DispatchMessage call. Takes no Arguments.
+getMessageCode
+	Gets the exact message code most recently received. Takes no Arguments.
+getWParam
+	Gets the exact WPARAM code most recently received. Takes no Arguments.
+getLParam
+	Gets the exact LPARAM code most recently received. Takes no Arguments.
+hasCloseMessage
+	Returns true if a close message is received, i.e. pressing the close button top right.
+	Takes no arguments.
+hasCommandMessage
+	Returns true if a command message is received. Takes no arguments.
+hasPaintMessage
+	Returns true if a paint message is received. Takes no arguments.
+hasKeyMessage
+	Returns true if a key is pressed with this window in focus. Takes no arguments.
+getKey
+	Returns the actual key code pressed if a keyboard message is received,
+	else it will return null. Takes no arguments.
+getCommand
+	Will return the WPARAM code of this message if there is one, else returns 0.
+	Takes no arguments.
+destroy
+	Destroys this vxFrame. Takes no arguments.
+setVisible
+	Takes a boolean value as argument. Will show the window at true,
+	makes a call to destroy() otherwise.
+show
+	Show this vxFrame. Takes no arguments.
+update
+	Update this vxFrame. Takes no arguments.
+add
+	Takes either one object or an array as arguments, and attempts to add them
+	to the vxFrame as GUI elements.
+dialog
+	Simply makes a call to vxDialog()
+getDC
+	Grabs a DC associated with this vxFrame. Takes no arguments.
+releaseDC
+	Releases DC associated to this vxFrame. Takes no arguments.
+drawLine
+	Draws a line given a DC is associated with this vxFrame.
+	Takes as arguments respectively numbers for x1, y1, x2, y2
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			5.	vxDialog
+//
+vxDialog provides a convenient way to show message boxes.
+It is created as
+			new vxDialog(caption, text, style)
+Where the result of mouse clicks is stored in a variable called "result".
+However, if instead of a caption, either vxOpen or vxSave are passed as arguments,
+this creates open and save dialogs respectively, and the result will be the directory specified.
+Example:
+			var myDialog = new vxDialog("Wait...", "Do you want to save this text?", vxYesNo)
+			
+			if(myDialog.yesClicked())
+			{
+				var mySaveDialog = new vxDialog(vxSave)
+				
+				var myFile = new vxFile(mySaveDialog.result).setText(myText).save()
+			}
+
+Full constructor:
+	vxDialog(caption, text, style)
+The following functions are provided by the vxDialog object:
+
+yesClicked
+	Returns true if the yes button was clicked. Takes no arguments.
+noClicked
+	Returns true if the no button was clicked. Takes no arguments.
+cancelClicked
+	Returns true if the cancel button was clicked. Takes no arguments.
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			6.	vxButton
+//
+vxButton is a wrapper of a GUI button element to be used in conjunction with vxFrame.
+All the information pertaining to a certain button is as such held by a vxButton object,
+whereas vxFrame handles all the extra backend operations such as the creation of HWND objects.
+Example:
+			var myFrame = new vxFrame("myProgram", 0, 0, 500, 200)
+			var myButton = new vxButton("Click me", 20, 20, 100, 30)
+			
+			myFrame.add(myButton)
+			myFrame.setVisible(true)
+			
+			while(myFrame.getMessage())
+			{
+				myFrame.handleMessage()
+				
+				if(myButton.isActivated())
+				{
+					//Do something.
+				}
+				//...
+			}
+Full Constructor:
+	vxButton(text, x, y, width, height, style)
+	
+The following functions are provided by the vxButton object:
+
+isActivated
+	Returns true if the button is activated in any way. Takes no arguments.
+getText
+	Gets the text assigned to this button, in other words, what's written on it.
+	Takes no arguments.
+setText
+	Sets the text of a certain button. Takes a string as argument.
+setStyle
+	Sets the style of a certain button. Takes a style number as argument.
+setFont
+	Sets the font of a button. Takes respectively width, height and a name string as arguments.
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			7.	vxEdit
+//
+vxEdit provides a nice way to add a edit text field to a vxFrame.
+
+Full constructor:
+	vxEdit(string, x, y, width, height)
+
+The following functions are provided by the vxEdit object:
+
+getText
+	Gets the text assigned to this edit field, in other words, what's written in it.
+	Takes no arguments.
+setText
+	Sets the text of a certain edit field. Takes a string as argument.
+setStyle
+	Sets the style of a certain edit field. Takes a style number as argument.
+setFont
+	Sets the font of an edit field. Takes respectively width, height and a name string as arguments.
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			8.	vxTextfield
+//
+vxTextfield provides a nice way to add larger editable text fields to vxFrames.
+
+Full constructor:
+	vxTextField(string, x, y, width, height)
+
+The following functions are provided by the vxTextField object:
+
+getText
+	Gets the text assigned to this text field, in other words, what's written in it.
+	Takes no arguments.
+setText
+	Sets the text of a certain text field. Takes a string as argument.
+setStyle
+	Sets the style of a certain text field. Takes a style number as argument.
+setFont
+	Sets the font of a text field. Takes respectively width, height and a name string as arguments.
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			9.	vxTrackbar
+//
+vxTrackbar provides a way to add trackbars/slidebars to vxFrames.
+
+Full constructor:
+	vxTrackbar(string, x, y, width, height)
+	
+The following functions are provided by the vxTrackbar object:
+
+isActivated
+	Returns true if the trackbar is activated. Takes no arguments.
+getValue
+	Returns a number between 0 and 100 for the value of this trackbar. Meaning 0 is it is dragged to the left,
+	100 meaning it is dragged to the right. Takes no arguments.
+setValue
+	Manually sets the trackbar to a certain value. Takes a number between 100 and 0 as an argument.
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			10.	vxSound
+//
+vxSound provides a nice way to play sampled sound files from a program.
+It has essentially calls to mciSendString hidden in the back.
+
+Full constructor:
+	vxSound(filePath, alias, volume)
+
+The following functions are provided by the vxSound object:
+
+open
+	Opens the file given. Takes no arguments.
+close
+	Closes the file given.
+start
+	Plays the given file. Takes a starting position and ending position as arguments.
+	If no arguments are given, it plays from beginning to end.
+stop
+	Stops playing the given file. Takes no arguments.
+pause
+	Pauses playing the given file. Takes no arguments.
+resume
+	Resumes playing the given file. Takes no arguments.
+rewind
+	Rewinds the the given soundclip. Takes no arguments.
+setVolume
+	Sets the volume of the given sound clip. Takes as argument a number between 0 and 1000.
+	Will do this regardless of whether the clip is playing or not.
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			11.	vxFile
+//
+vxFile provides an intuitive way of dealing with files. Instead of much ado with
+opened and closed files, this one mimics this functionality while copying the contents into a buffer.
+This should provide an extra layer of safety to prevent undesirable effects to files when errors occur.
+
+Full constructor:
+
+vxFile(filePath)
+
+The following functions are provided by the vxFile object:
+
+open
+	"opens" the file. What really goes on the in the backend is the file is opened, 
+	its contents are stored in this object, and it is closed again leaving the contents in the buffer.
+	Takes no arguments.
+close
+destroy
+	These two are the same. Make this empty. Takes no arguments.
+setDir
+	Sets the directory to the given string argument.
+save
+	In conjunct with "open" this one is intuitive. What it does is it opens a file, empties it,
+	writes its buffer into it and closes it again. Takes no arguments.
+append
+	This will open a file, append the buffer to the end of it, and close it again.
+setText
+	Changes the buffer text to a given argument string.
+getText
+	Get the text in the buffer.
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			12.	vxProcess
+//
+vxProcess hides some more tedious backend stuff related to multithreading from the user.
+
+Full constructor:
+	vxProcess(adress)
+	If no adress to a process is given, this will create one on the spot.
+
+The following functions are provided by the vxProcess object:
+
+destroy
+	Destroys the adress and frees allocated memory. Takes no arguments.
+loadup
+	Loads a string of text into this object as if it were. Assumes it is Javascript.
+	Takes only a string argument.
+run
+	Runs the given bit of javascript code as a seperate thread.
+	Takes a string as an argument, if no string is given, it runs whatever code
+	is stored in the object.
+isActive
+	Returns true if this thread is busy. Takes no arguments.
+passInt
+	Passes an int as a variable to this thread.
+	Takes a name string and a number as arguments respectively.
+passUint
+	Passes an unsigned int as a variable to this thread.
+	Takes a name string and a number as arguments respectively.
+passByte
+	Passes an byte as a variable to this thread.
+	Takes a name string and a number as arguments respectively.
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			13.	vxMouse
+//
+Provides away to simulate mouse input.
+
+event
+	Sends a raw event in the form of event(code, x, y);
+move
+	Moves the mouse along x and y coordinates relative to its current position.
+The following functions take no arguments and should be self-explanatory:
+rightDown
+rightUp
+rightClick
+leftDown
+leftUp
+leftClick
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			14.	vxKeyboard
+//
+Provides a way to simulate keyboard input using windows virtual keycodes.
+
+keyDown
+	Simulate a keydown.
+	Takes key code for argument.
+keyUp
+	Simulates a key release.
+	Takes key code for argument.
+keyType
+	Simulates a single key typed. In other words, wraps down and up.
+	Takes key code for argument.
+keyString
+	Takes a string as an argument and types them in sequence.
+keyCode
+	Retrieve the windows virtual keycode by its name,
+	i.e. keyCode("a"); or keyCode("caps");
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			15.	vxWindows
+//
+Unlike other files provided in this set, this one does no specify a certain object.
+It is a central place to store certain variables to be used in conjunction with the windows API,
+as well as providing some useful functions.
+
+Variables specified in this file:
+
+vxSave					= 7777
+vxOpen					= 6666
+vxOk					= 0x00000000
+vxYesNo					= 0x00000004
+vxYesNoCancel				= 0x00000003
+vxWarning				= 0x00000030
+vxError					= 0x00000010
+vxInformation				= 0x00000040
+vxPaint 				= 0x0000000F
+vxShowWindow 				= 0x00000018
+vxCommand 				= 0x00000111
+vxClose 				= 0x00000010
+vxSize 					= 0x00000005
+vxDestroy 				= 0x00000002
+vxNCDestroy				= 0x00000082
+vxCreate 				= 0x00000001
+vxChar 					= 0x00000102
+vxKeyDown				= 0x00000100
+vxKeyUp					= 0x00000101
+vxRButtonDown 				= 0x00000204
+vxRButtonUp 				= 0x00000205
+vxLButtonDown 				= 0x00000201
+vxLButtonUp 				= 0x00000202
+vxVisible				= 0x10000000
+vxChild					= 0x40000000
+vxPushButton				= 0x00000000
+vxCaption				= 0x00C00000
+vxOverlapped				= 0x00000000
+vxMultiline				= 0x00000004
+vxBorder				= 0x00800000
+vxHScroll				= 0x00100000
+vxVScroll				= 0x00200000
+vxAutoHScroll				= 0x00000080
+vxAutoVScroll				= 0x00000040
+vxWantReturn				= 0x00001000
+vxPassword				= 0x00000020
+vxNumber				= 0x00002000
+vxFlat					= 0x00008000
+vxSizeBox				= 0x00040000
+vxSysMenu				= 0x00080000
+vxThickFrame				= 0x00040000
+vxMinimize				= 0x20000000
+vxMinimizeBox				= 0x00020000
+vxMaximize				= 0x01000000
+vxMaximizeBox				= 0x00010000
+vxWMHScroll				= 0x00000114
+vxGetPos				= 0x00000400
+vxSetPos				= 0x00000405
+
+Functions provided in vxWindows:
+
+vxUniqueNumber
+	Generates a unique number, never generates the same twice.
+	Used internally to cleanup windows API things.
+vxSleep
+	Sleeps for n miliseconds. Takes number as argument.
+vxBeep
+	Beeps at a certain frequency.
+	Takes respectively frequency and miliseconds as arguments.
+vxSystem
+	Makes a call to the system. Equivalent to _vx_system_
+vxShutdownPC
+	Shuts down the PC immediately without warnings.
+	Takes no arguments.
+vxTimeShutdownPC
+	Places a timed shutdown task with the system.
+	Takes a number of minutes asargument.
+vxRestartPC
+	Restarts the PC without warning. Takes no arguments.
+vxLogoutPC
+	Logs the current user out of the PC without warning.
+	Takes no arguments.
+vxSleepPC
+	Puts the PC in hybernation state without warning.
+	Takes no argument.
+vxMci
+	Sends a string through the MCI.
+	Takes only a string as argument.
+vxOpenCDDrive
+	Opens the cd drive. Takes no arguments
+vxCloseCDDrive
+	Closes the cd drive. Takes no arguments.
+

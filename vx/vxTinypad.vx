@@ -1,0 +1,78 @@
+vxInclude("c:\\vx\\vxFrame");
+vxInclude("c:\\vx\\vxDialog");
+vxInclude("c:\\vx\\vxFile");
+vxInclude("c:\\vx\\vxProcess");
+var _tprb_ = null;
+try {
+  var _frame_ = new vxFrame("vxTinypad (under construction)", 0x32, 0x32, 0x190, 0x258, vxSysMenu);
+  var _new_button_ = new vxButton("New", 0x0, 0x0, 100, 0x19);
+  var _open_button_ = new vxButton("Open", 100, 0x0, 100, 0x19);
+  var _save_button_ = new vxButton("Save", 200, 0x0, 100, 0x19);
+  var _run_button_ = new vxButton("Run", 300, 0x0, 100, 0x19);
+  var _text_field_ = new vxTextField(null, 0x5, 0x1e, 390, 525);
+} catch (_0x5bda7f) {
+  vxErrorMessage(_0x5bda7f);
+}
+try {
+  _text_field_.setStyle(vxHScroll | vxVScroll);
+  _frame_.add(_new_button_);
+  _frame_.add(_open_button_);
+  _frame_.add(_save_button_);
+  _frame_.add(_run_button_);
+  _frame_.add(_text_field_);
+  _frame_.setVisible(true);
+  _text_field_.setFont(0x7, 0xf);
+} catch (_0x183a57) {
+  vxErrorMessage(_0x183a57);
+}
+while (_frame_.getMessage()) {
+  _frame_.handleMessage();
+  if (_frame_.hasCloseMessage()) {
+    break;
+  } else {
+    if (_new_button_.isActivated()) {
+      _text_field_.setText(new String());
+    } else {
+      if (_open_button_.isActivated()) {
+        var _dir_ = new vxDialog(vxOpen).result;
+        if (_dir_) {
+          try {
+            var _fop_ = new vxFile(_dir_);
+            _fop_.open();
+            var _str_ = _fop_.getText().replace(/\n/g, "\r\n");
+            _text_field_.setText(_str_ ? _str_ : "null");
+          } catch (_0x2fb982) {
+            vxErrorMessage(_0x2fb982);
+          }
+        }
+      } else {
+        if (_save_button_.isActivated()) {
+          var _sbdir_ = new vxDialog(vxSave).result;
+          if (_sbdir_) {
+            try {
+              var _fsv_ = new vxFile(_sbdir_);
+              var _str_ = _text_field_.getText().replace(/\r\n/g, "\n");
+              _fsv_.setText(_str_);
+              _fsv_.save();
+            } catch (_0x2fb677) {
+              vxErrorMessage(_0x2fb677);
+            }
+          }
+        } else {
+          if (_run_button_.isActivated()) {
+            try {
+              if (_tprb_) {
+                _tprb_.destroy();
+              }
+              _tprb_ = new vxProcess();
+              _tprb_.run(_text_field_.getText());
+            } catch (_0x2e15bf) {
+              vxErrorMessage(_0x2e15bf);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+_frame_.destroy();

@@ -1,0 +1,12 @@
+///////////////////////////////////////////////////////////////////////////////////////
+vxInclude("C:\\vx\\vxCon");
+vxInclude("C:\\vx\\vxFile");
+vxInclude("C:\\vx\\vxDirectory");
+vxInclude("C:\\vx\\vxProcess");
+vxInclude("C:\\vx\\vxProgram");
+vxInclude("C:\\vx\\vxFrame");
+vxInclude("C:\\vx\\vxDialog");
+vxInclude("C:\\vx\\vxSound");
+vxInclude("C:\\vx\\vxMouse");
+vxInclude("C:\\vx\\vxKeyboard");
+///////////////////////////////////////////////////////////////////////////////////////

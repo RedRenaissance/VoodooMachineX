@@ -1,0 +1,252 @@
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			The following are provided as hard-coded
+//			in the VoodooMachineX.exe
+//
+//			Note:
+//			Due to the functionality being outsourced to native,
+//			misuse can result in unpredictable behaviour.
+//
+//			Author: Ruben Brouwer
+//
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+Variables:
+
+_vx_stdin_
+			Analogous to standard C's stdin.
+_vx_stdout_
+			Analogous to standard C's stdout.
+_vx_stderr_
+			Analogous to standard C's stderr.
+_vx_byte_
+			Analogous to standard C's sizeof(char).
+_vx_word_
+			Analogous to standard C's sizeof(short).
+_vx_maxbuff_
+			A nice constant for maximum size of memory adresses.
+			At time of writing set to 1024*256
+
+Functions:
+
+_vx_error_
+vxErrorMessage	(alias)
+			Takes a string as argument to display an error message box.
+
+_vx_include_
+vxInclude		(alias)
+			Takes a directory string as argument, opens the file,
+			and sends it through the machine. used to mimic includes/imports.
+_vx_exit_
+			Analogous to the standard C function "exit"
+			Takes a number as exit code.
+_vx_putc_
+			Analogous to the standard C function "fputc".
+			Takes a numer to print as first argument, a stream
+			to print to as a second argument.
+			Example:
+						_vx_putc_(33, _vx_stdout_);
+_vx_getc_
+			Analogous to the standard C function "fgetc".
+			Takes a stream as an argument to read from.
+			Example:
+						_vx_getc_(_vx_stdin_);
+_vx_print_
+			Prints a line to a given stream.
+			Takes a string as the first argument and a stream as the second.
+			Example:
+						_vx_print_("Hello, world\n", _vx_stdout_);
+_vx_read_
+			Reads a line from a given stream and returns it.
+			Example:
+						_vx_read_(_vx_stdin_);
+_vx_fopen_
+			Analogous to the standard C function "fopen".
+_vx_fclose_
+			Analogous to the standard C function "fclose".
+_vx_sleep_
+			Analogous to the Windows API function "Sleep"
+_vx_conopen_
+			Allocates a new console and rerouts the standard streams.
+_vx_conclose_
+			Closes the allocated console and rerouts the streams.
+_vx_inline_
+			Shoves a string of Javascript directly into the interpreter.
+_vx_alloc_
+			Allocates a number of bytes and initialises to zero.
+			Takes a number as argument. Returns a number which represents
+			the memory adress allocated at.
+			Example:
+						_vx_alloc_(1000);
+						is equivalent to
+						calloc(1000, 1);
+_vx_realloc_
+			Analogous to the standard C function "realloc"
+_vx_free_
+			Analogous to the standard C function "free"
+_vx_put_byte_
+			Takes a number as a memory adress to write at and
+			a number as a value to write in it.
+			Example:
+						_vx_put_byte_(myPointer, 33);
+_vx_put_word_
+			Takes a number as a memory adress to write at and
+			a number as a value to write in it.
+			Example:
+						_vx_put_word_(myPointer, 33);
+_vx_put_dword_
+			Takes a number as a memory adress to write at and
+			a number as a value to write in it.
+			Example:
+						_vx_put_dword_(myPointer, 33);
+_vx_put_int_
+			Takes a number as a memory adress to write at and
+			a number as a value to write in it.
+			Example:
+						_vx_put_int_(myPointer, -97);
+_vx_put_double_
+			Takes a number as a memory adress to write at and
+			a floating point number as a value to write in it.
+			Example:
+						_vx_put_double_(myPointer, 45636.123);
+_vx_put_string_
+			Takes a number as a memory adress to write at and
+			a string as a value to write in it.
+			Example:
+						_vx_put_byte_(myPointer, "Hello, world!\n");
+_vx_set_static_
+			Sets a static memory adress that is accessible from all threads.
+			Takes a number as an adress.
+			Example:
+						_vx_set_static_(_vx_alloc_(1000));
+_vx_get_byte_
+_vx_get_word_
+_vx_get_dword_
+_vx_get_int_
+_vx_get_double_
+_vx_get_string_
+			All these functions get the item as self explanatory
+			from the adress given. For example, assuming x is an
+			adress _vx_get_int_(x) will read off an integer from
+			the first four bytes. _vx_get_int_(x+4) will read it 
+			from an offset of 4 bytes, etc.
+			Note that the _vx_get_string_ function assumes a C string
+			and so it will keep fetching information until 0
+_vx_get_static_
+			Gets the adress of the static space. Default is 0,
+			meaning nothing has been assigned yet.
+			Example:
+						_vx_free_(_vx_get_static_());
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			Related to multithreading:
+//
+/////////////////////////////////////////////////////////////////////////////////////////////
+_vxp_create_
+			Creates an instance of VoodooMachineX in a new thread.
+			Returns a number that represents the adress of this object.
+_vxp_destroy_
+			Destroys a thread object. Takes an adress as argument.
+_vxp_is_active_
+_vxp_loadup_
+			Hands a bit of javascript code to a VoodooMachineX thread.
+			Takes an adress as first argument, and a string as second.
+_vxp_run_
+			Runs the thread, given it exists and holds javascript instructions.
+			Takes an adress as an argument.
+_vxp_pass_uint_
+_vxp_pass_int_
+_vxp_pass_byte_
+			These functions push a variable by name into a VoodooMachineX thread.
+			They take an adress as the first argument, a name string as the second,
+			and a value as the last argument.
+			Example:
+						_vxp_pass_uint_(my_thread, "ascii_a", 97);
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			Related to the Windows Operating System:
+//
+/////////////////////////////////////////////////////////////////////////////////////////////	
+_vxw_sleep_
+			Analogous to Windows' Sleep function. Takes a number as argument to be
+			miliseconds to sleep.
+_vxw_beep_
+			Analogous to Windows' Beep function. Takes a frequency as first argument,
+			miliseconds as the second.
+_vxw_system_
+			Essentially the same as C's system function.
+_vxw_dialog_
+			Similar to Windows' MessageBox function. Takes arguments in order:
+			A string for the caption, a string for the text of the dialog, a number for style
+_vxw_openfiledialog_
+			Creates an open file dialog to browse files. Takes a filter string as argument and returns
+			the string of the selected directory.
+_vxw_savefiledialog_
+			Creates a save file dialog to browse files. Takes a filter string as argument and returns
+			the string of the selected directory.
+_vxw_send_message_
+			Analogous to Windows' SendMessage function. Takes arguments in order:
+			A HWND adress, message, wparam, lparam.
+_vxw_create_wndclassex_
+			Hides Windows' Windows class creation from the user. Takes a string as argument
+			for the class name. Returns an adress to the window class, or returns 0 at failure.
+_vxw_destroy_wndclassex_
+			Destroys the window class and frees allocated memory. Takes an adress as argument.
+_vxw_create_window_
+			Roughly mimics Windows' CreateWindow function.
+			Takes arguments in order:
+			string classname, string window name, number style,	numbers position x, position y,
+			numbers width, height, numbers as adresses for parent hwnd and menu, lpparam.
+_vxw_destroy_window_
+			Analogous to Windows' DestroyWindow function. Takes a number as argument for hwnd.
+_vxw_show_window_
+			Calls ShowWindow, takes a number for hwnd as argument.
+_vxw_update_window_
+			Calls UpdateWindow, takes a number for hwnd as argument.
+_vxw_create_message_
+			Allocates space for a Windows MSG struct and returns the adress.
+			Takes no arguments.
+_vxw_destroy_message_
+			Frees space allocated for a native MSG struct. Takes adress as argument.
+_vxw_get_message_
+			Mimics Windows' GetMessage function. Takes an adress to a MSG as first argument,
+			a hwnd number as a second.
+_vxw_translate_message_
+			Takes an adress to a MSG structure and calls Windows' TranslateMessage.
+_vxw_dispatch_message_
+			Takes an adress to a MSG structure and calls Windows' DispatchMessage.
+_vxw_hwnd_
+_vxw_msg_
+_vxw_wparam_
+_vxw_lparam_
+			Since the Windows native hwnd, msg, wparam and lparam information is written in static spaces,
+			these four functions return their current values. Neither take any arguments.
+_vxw_mci_
+			Makes a call to mciSendString. Takes a string as argument.
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+//			Note, the following are experimental:
+//
+/////////////////////////////////////////////////////////////////////////////////////////////
+_vxw_get_dc_
+			Takes hwnd number as argument and returns a native HDC adress.
+_vxw_release_dc_
+			Takes a hwnd and a HDC adress as arguments and releases the HDC.
+_vxw_move_to_
+			Takes HDC and an x and y coordinate as arguments respectively, and moves the HDC.
+_vxw_line_to_
+			Takes HDC and an x and y coordinate as arguments respectively, and draws a line there.
+_vxw_select_object_
+			Mimics SelectObject.
+			Takes HDC adress as first argument and an adress for HGDIOBJ as a second.
+_vxw_delete_object_
+			Takes a HGDIOBJ as argument and calls DeleteObject.
+_vxw_color_
+			Takes numbers for rgb in order, and creates a native COLORREF.
+_vxw_create_pen_
+			Creats a native pen object and returns its adress.
+			Takes width and color as arguments.
+_vxw_create_font_
+			Creates a font and returns its adress.
+			Takes arguments in order: numbers height, width, string name.

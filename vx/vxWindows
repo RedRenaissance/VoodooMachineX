@@ -1,0 +1,183 @@
+///////////////////////////////////////////////////////////////////////////////////////
+vxWindowsIncluded = false;
+///////////////////////////////////////////////////////////////////////////////////////
+const vxSave				= 7777;
+const vxOpen				= 6666;
+const vxOk					= 0x00000000;
+const vxYesNo				= 0x00000004;
+const vxYesNoCancel			= 0x00000003;
+const vxWarning				= 0x00000030;
+const vxError				= 0x00000010;
+const vxInformation			= 0x00000040;
+const vxQuestion			= 0x00000020;
+const vxPaint 				= 0x0000000F;
+const vxShowWindow 			= 0x00000018;
+const vxCommand 			= 0x00000111;
+const vxClose 				= 0x00000010;
+const vxSize 				= 0x00000005;
+const vxDestroy 			= 0x00000002;
+const vxNCDestroy			= 0x00000082;
+const vxCreate 				= 0x00000001;
+const vxChar 				= 0x00000102;
+const vxKeyDown				= 0x00000100;
+const vxKeyUp				= 0x00000101;
+const vxRButtonDown 		= 0x00000204;
+const vxRButtonUp 			= 0x00000205;
+const vxLButtonDown 		= 0x00000201;
+const vxLButtonUp 			= 0x00000202;
+const vxVisible				= 0x10000000;
+const vxChild				= 0x40000000;
+const vxPushButton			= 0x00000000;
+const vxCaption				= 0x00C00000;
+const vxOverlapped			= 0x00000000;
+const vxMultiline			= 0x00000004;
+const vxBorder				= 0x00800000;
+const vxHScroll				= 0x00100000;
+const vxVScroll				= 0x00200000;
+const vxAutoHScroll			= 0x00000080;
+const vxAutoVScroll			= 0x00000040;
+const vxWantReturn			= 0x00001000;
+const vxPassword			= 0x00000020;
+const vxNumber				= 0x00002000;
+const vxFlat				= 0x00008000;
+const vxSizeBox				= 0x00040000;
+const vxSysMenu				= 0x00080000;
+const vxThickFrame			= 0x00040000;
+const vxMinimize			= 0x20000000;
+const vxMinimizeBox			= 0x00020000;
+const vxMaximize			= 0x01000000;
+const vxMaximizeBox			= 0x00010000;
+const vxWMHScroll			= 0x00000114;
+const vxGetPos				= 0x00000400;
+const vxSetPos				= 0x00000405;
+const vxHwndBroadcast		= 0x0000FFFF;
+const vxQuit				= 0x00000012;
+///////////////////////////////////////////////////////////////////////////////////////
+if(!vxUniqueNumbers)
+	var vxUniqueNumbers = new Array();
+///////////////////////////////////////////////////////////////////////////////////////
+function vxUniqueNumber()
+{
+	if(!vxUniqueNumbers.length)
+		vxUniqueNumbers.push(10000);
+	else
+		vxUniqueNumbers.push(vxUniqueNumbers[vxUniqueNumbers.length-1]+1);
+	return vxUniqueNumbers[vxUniqueNumbers.length-1];
+}
+///////////////////////////////////////////////////////////////////////////////////////
+function vxSleep(_i_)
+{
+	return _vxw_sleep_(_i_?_i_:0);
+}
+///////////////////////////////////////////////////////////////////////////////////////
+function vxBeep(_f_, _d_)
+{
+	return _vxw_beep_(_f_?_f_:420, _d_?_d_:500);
+}
+///////////////////////////////////////////////////////////////////////////////////////
+function vxSystem(_s_)
+{
+	if(!_s_) throw new Error("cannot call system on NULL");
+	return _vxw_system_(_s_);
+}
+///////////////////////////////////////////////////////////////////////////////////////
+function vxExit(_x_)
+{
+	return _vx_exit_(_x_?_x_:0);
+}
+///////////////////////////////////////////////////////////////////////////////////////
+function vxShutdownPC()
+{
+	_vxw_system_("@echo off | shutdown /p /f");
+	return true;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+function vxTimeShutdownPC(_min_)
+{
+	if(_min_)
+		_vxw_system_("@ echo off | shutdown /s /t " + _min_ * 60);
+	else throw new Error();
+	return true;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+function vxLogoutPC()
+{
+	_vxw_system_("@echo off | shutdown /l /f");
+	return true;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+function vxRestartPC()
+{
+	_vxw_system_("@echo off | shutdown /g /f");
+	return true;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+function vxSleepPC()
+{
+	_vxw_system_("shutdown /h /f");
+	return true; 
+}
+///////////////////////////////////////////////////////////////////////////////////////
+function vxMci(_s_)
+{
+	if(_s_)
+		_vxw_mci_(_s_);
+	else throw new Error("cannot call mci on NULL");
+	return true;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+function vxOpenCDDrive()
+{
+	try
+	{
+		vxMci("set cdaudio door open");
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////
+function vxCloseCDDrive()
+{
+	try
+	{
+		vxMci("set cdaudio door closed");
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////
+function vxStartCDDrive(_a_, _b_)
+{
+	try
+	{
+		vxMci("play cdaudio " + (_a_?"from "+_a_:"")+(_b_?" to "+_b_:""));
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////
+function vxStopCDDrive(_a_, _b_)
+{
+	try
+	{
+		vxMci("stop cdaudio");
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////
+function vxSendMessage(_hwnd_, _msg_, _wparam_, _lparam_)
+{
+	return _vxw_send_message_(_hwnd_, _msg_, _wparam_, _lparam_);
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxWindowsIncluded = true;
+///////////////////////////////////////////////////////////////////////////////////////

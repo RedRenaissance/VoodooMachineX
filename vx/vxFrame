@@ -1,0 +1,301 @@
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrameIncluded = false;
+///////////////////////////////////////////////////////////////////////////////////////
+//if(!vxWindowsIncluded)
+vxInclude("C:\\vx\\vxWindows");
+//if(!vxButtonIncluded)
+vxInclude("C:\\vx\\vxButton");
+//if(!vxLabelIncluded)
+vxInclude("C:\\vx\\vxLabel");
+//if(!vxTextFieldIncluded)
+vxInclude("C:\\vx\\vxTextField");
+//if(!vxEditIncluded)
+vxInclude("C:\\vx\\vxEdit");
+//if(!vxTrackbarIncluded)
+vxInclude("C:\\vx\\vxTrackbar");
+///////////////////////////////////////////////////////////////////////////////////////
+function vxFrame(_name_, _x_, _y_, _w_, _h_, _s_)
+{
+	if(!_name_)	throw new ReferenceError("cannot initialize class name NULL in vxFrame constructor");
+	
+	this.vxType 			= "vxFrame";
+	this.HDC 				= null;
+	this.name				= _name_?_name_:"vxFrame";
+	this.visible			= false;
+	this.x 					= _x_?_x_:0;
+	this.y 					= _y_?_y_:0;
+	this.width 				= _w_?_w_:400;
+	this.height 			= _h_?_h_:200;
+	this.children 			= new Array();
+
+	this.msg 				= _vxw_create_message_();
+	if(!this.msg)
+		throw new Error("failed to allocate space for MSG object in vxFrame constructor");
+	
+	this.wndc 				= _vxw_create_wndclassex_(this.name);
+	if(!this.wndc)
+		throw new Error("failed to allocate space for WNDCLASS object in vxFrame constructor");
+	//this.line				= _vwx_create_pen_(2, _vxw_color_(0, 0, 0));
+	
+
+	this.hwnd = _vxw_create_window_
+		(
+		this.name,
+		this.name,
+		_s_?_s_:(vxOverlapped | vxCaption | vxSysMenu),
+		this.x,
+		this.y,
+		this.width,
+		this.height,
+		0,
+		0,
+		0
+	);
+	
+	if(!this.hwnd)
+		throw new Error("failed to create window handle in vxFrame constructor");
+
+	return this;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.getMessage = function()
+{
+	return _vxw_get_message_(this.msg, this.hwnd);
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.translateMessage = function()
+{
+	return _vxw_translate_message_(this.msg);
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.dispatchMessage = function()
+{
+	return _vxw_dispatch_message_(this.msg);
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.getMessageCode = function()
+{
+	return _vxw_msg_();
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.getWParam = function()
+{
+	return _vxw_wparam_();
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.getLParam = function()
+{
+	return _vxw_lparam_();
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.hasMessage = function()
+{
+		return (_vxw_hwnd_() == this.hwnd);
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.hasCloseMessage = function()
+{
+	var _code_ = this.getMessageCode();
+	return (this.hasMessage())&&
+			((_code_ == vxClose)||
+			(_code_ == vxDestroy)||
+			(_code_ == vxNCDestroy));
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.hasCommandMessage = function()
+{
+	var _code_ = this.getMessageCode();
+	return (this.hasMessage())&&
+			(_code_ == vxCommand);
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.hasPaintMessage = function()
+{
+	var _code_ = this.getMessageCode();
+	return (this.hasMessage())&&
+			(_code_ == vxPaint);
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.hasKeyMessage = function()
+{
+	var _code_ = this.getMessageCode();
+	return (this.hasMessage())&&
+			((_code_ == vxChar)||
+			(_code_ == vxKeyDown));
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.getKey = function()
+{
+	if(!this.hasKeyMessage()) return null;
+	else return this.getWParam();
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.getCommand = function()
+{
+	if(!this.hasMessage()) return 0;
+	else return _vxw_wparam_();
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.destroy = function()
+{
+	if(this.hwnd)
+		_vxw_destroy_window_(this.hwnd);
+	if(this.wndc)
+		_vxw_destroy_wndclassex_(this.wndc);
+	if(this.msg)
+		_vxw_destroy_message_(this.msg);
+	return this;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.handleMessage = function()
+{
+	this.translateMessage();
+	this.dispatchMessage();
+	return this;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.setVisible = function(_bool_)
+{
+	this.visible = _bool_;
+	if(this.hwnd)
+	{
+		if(this.visible)
+		{
+			_vxw_show_window_(this.hwnd);
+			_vxw_update_window_(this.hwnd);
+		}
+		else
+		{
+			_vxw_destroy_window_(this.hwnd);
+			this.hwnd = 0;
+		}
+	}
+	else
+	{
+		throw new Error("no window handle found in vxFrame.setVisible");
+	}
+	return this;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.show = function()
+{
+	_vxw_show_window_(this.hwnd);
+	return this;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.update = function()
+{
+	_vxw_update_window_(this.hwnd);
+	return this;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.add = function(_obj_)
+{
+	if(_obj_ instanceof Array)
+	{
+		_o_ = false;
+		for(_n_ = 0; _n_ < _obj_.length; _n_++)
+			_o_ = this.add(_obj_[_n_]);
+		return _o_;
+	}
+	else if(_obj_.vxType)
+	{
+		_cname_ = null;
+		_style_ = (vxChild | vxVisible) | (_obj_.style?_obj_.style:0);
+		
+		if(_obj_.vxType == "vxButton")
+		{
+			_cname_ = "BUTTON";
+			_style_ |= (vxPushButton | vxFlat);
+		}
+		else if(_obj_.vxType == "vxTrackbar")
+		{
+			_cname_ = "msctls_trackbar32";
+		}
+		else if(_obj_.vxType == "vxLabel")
+		{
+			_cname_ = "STATIC";
+		}
+		else if(_obj_.vxType == "vxTextField")
+		{
+			_cname_ = "EDIT";
+			//_style_ |= (vxMultiline | vxBorder | vxVScroll | vxAutoVScroll | vxHScroll);
+			_style_ |= (vxMultiline | vxBorder);
+		}
+		else if(_obj_.vxType == "vxEdit")
+		{
+			_cname_ = "EDIT";
+			_style_ |= (vxBorder);
+		}
+		//
+		//
+		_obj_.hwnd = _vxw_create_window_
+		(
+			_cname_,
+			_obj_.str,
+			_style_,
+			_obj_.x,
+			_obj_.y,
+			_obj_.width,
+			_obj_.height,
+			this.hwnd,
+			_obj_.id,
+			0
+		);
+		if(!_obj_.hwnd)
+		{
+			throw new Error("failed to create window handle in vxFrame.add");
+			return false;
+		}
+		
+		if(!(_obj_.font) && (_obj_.vxType != "vxTrackbar"))_obj_.setFont();
+		_obj_.parentHwnd = this.hwnd;
+		this.children.push(_obj_);
+		return true;
+	}
+	else
+	{
+		throw new Error("object must be of vxType in vxFrame.add");
+		return false;
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.sendMessage = function(_msg_, _wparam_, _lparam_)
+{
+	_vxw_send_message_(this.hwnd,
+						(_msg_?_msg_:0),
+						(_wparam_?_wparam_:0),
+						(_lparam_?_lparam_:0));
+	return this;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.dialog = function(_capt_, _str_, _type_)
+{
+	return _vxw_dialog_((_capt_?_capt_:""), (_str_?_str_:""), (_type_?_type_:0));
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.getDC = function()
+{
+	this.HDC = _vxw_get_dc_(this.hwnd);
+	return this.HDC;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.releaseDC = function()
+{
+	if(!(this.HDC)) return false;
+	_vxw_release_dc_(this.hwnd, this.HDC);
+	this.HDC = 0;
+	return true;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrame.prototype.drawLine = function(_x1_, _y1_, _x2_, _y2_)
+{
+	if(!(this.HDC)) return;
+	//_vxw_select_object_(this.HDC, this.line);
+	_vxw_move_to_(this.HDC, _x1_, _y1_);
+	_vxw_line_to_(this.HDC, _x2_, _y2_);
+	return this;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxFrameIncluded = true;
+///////////////////////////////////////////////////////////////////////////////////////

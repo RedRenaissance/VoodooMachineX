@@ -1,0 +1,188 @@
+////////////////////////////////////////////////////////////////////////////////////////
+//
+//		A intuitive file object. Does not open or close streams,
+//		but works by simple principles of open and save, and keeps
+//		its contents in a seperate buffer.
+//
+////////////////////////////////////////////////////////////////////////////////////////
+vxFileIncluded = false;
+////////////////////////////////////////////////////////////////////////////////////////
+function vxFile(_d_)
+{
+	this.vxType = "vxFile";
+	this.dir = _d_? _d_: null;
+	this.buffer = null;
+	return this;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxFile.prototype.copy = function(_new_)
+{
+	return _vxw_copy_file(this.dir, _new_);
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxFile.prototype.create = function(_d_)
+{
+	if(_d_)
+	{
+		_vx_fopen_(_d_, "w+");
+		_vx_fclose_(_d_);
+		return this;
+	}
+	else if(this.dir)
+	{
+		_vx_fopen_(this.dir, "w+");
+		_vx_fclose_(this.dir);
+		return this;
+	}
+	else return null;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxFile.prototype.destroy = function(_d_)
+{
+	if(_d_)
+	{
+		_vxw_delete_file_(_d_);
+		return this;
+	}
+	else if(this.dir)
+	{
+		_vxw_delete_file_(this.dir);
+		return this;
+	}
+	else return null;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxFile.prototype.close = function()
+{
+	return this.destroy();
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxFile.prototype.setDir = function(_d_)
+{
+	if(_d_) this.dir = d;
+	return this;
+}
+vxFile.prototype.getDir = function()
+{
+	return this.dir;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxFile.prototype.open = function(d)
+{
+	if(d) this.setDir(d);
+	if(this.dir == null)
+		throw new ReferenceError("directory is NULL in vxFile.open");
+	
+	this.buffer = new String();
+	
+	var file = null;
+	try
+	{
+		file = _vx_fopen_(this.dir, "r");
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+	
+	if(!file)
+		throw new Error("fopen returned NULL in vxFile.open");
+
+	try
+	{
+		c = _vx_getc_(file);
+
+		while(c != -1)
+		{
+			this.buffer += String.fromCharCode(c);
+			c = _vx_getc_(file);
+		}
+		_vx_fclose_(file);
+	}
+	catch(err)
+	{
+		_vx_fclose_(file);
+		vxErrorMessage(err);
+	}
+	return this;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxFile.prototype.save = function(_fsd_)
+{
+	if(_fsd_) this.setDir(_fsd_);
+	if(this.dir == null)
+		throw new ReferenceError("directory is NULL in vxFile.save");
+	var _fsf_ = null;
+	
+	try
+	{
+		_fsf_ = _vx_fopen_(this.dir, "w");
+	}
+	catch(err)
+	{
+		if(_fsf_)_vx_fclose_(_fsf_);
+		vxErrorMessage(err);
+	}
+	
+	if(!_fsf_)
+		throw new Error("fopen returned NULL in vxFile.save");
+	
+	try
+	{
+		for(var _fsn_ = 0; _fsn_ < this.buffer.length; _fsn_++)
+			_vx_putc_(this.buffer.charCodeAt(_fsn_), _fsf_);
+		
+		_vx_fclose_(_fsf_);
+	}
+	catch(err)
+	{
+		if(_fsf_)_vx_fclose_(_fsf_);
+		vxErrorMessage(err);
+	}
+	
+	return this;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxFile.prototype.append = function(s)
+{
+	if(this.buffer == null)
+		this.buffer = new String();
+	this.buffer += s;
+	return this;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxFile.prototype.exists = function()
+{
+	if(this.dir == null) return false;
+	else
+	{
+		var _o_ = false;
+		var _f_ = null;
+		try
+		{
+			_f_ = _vx_fopen_(this.dir, "r");
+			_o_ = _f_? true: false;
+			if(_o_) _vx_fclose_(_f_);
+			return _o_;
+		}
+		catch(err)
+		{
+			if(_o_) _vx_fclose_(_f_);
+			vxErrorMessage(err);
+		}
+	}
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxFile.prototype.setText = function(s)
+{
+	this.buffer = s;
+	return this;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxFile.prototype.getText = function()
+{
+	return this.buffer;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxFileIncluded = true;
+////////////////////////////////////////////////////////////////////////////////////////

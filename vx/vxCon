@@ -1,0 +1,132 @@
+////////////////////////////////////////////////////////////////////////////////////////
+vxConIncluded = false;
+////////////////////////////////////////////////////////////////////////////////////////
+function vxCon()
+{
+	this.vxType = "vxCon";
+	this.open();
+	this.cin = _vx_stdin_;
+	this.cout = _vx_stdout_;
+	this.cerr = _vx_stderr_;
+	return;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxCon.prototype.open = function()
+{
+	try
+	{
+		_vx_conopen_();
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+	return this;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxCon.prototype.close = function()
+{
+	try
+	{
+		_vx_conclose_();
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+	return this;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxCon.prototype.getChar = function()
+{
+	var _o_ = null;
+	
+	try
+	{
+		_o_ = String.fromCharCode(_vx_getc_(this.cin));
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+	return _o_;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxCon.prototype.putChar = function(x)
+{
+	if(!x)
+		throw new ReferenceError("cannot put void in vxCon.putChar");
+	
+	try
+	{
+		_vx_putc_(x.charCodeAt(0), this.cout);
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+	return this;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxCon.prototype.print = function(_s_)
+{
+	if(!_s_)
+		throw new ReferenceError("cannot print void in vxCon.print");
+	
+	try
+	{
+		_vx_print_(_s_?_s_:"", _vx_stdout_);
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+	return this;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxCon.prototype.read = function()
+{
+	var _o_ = null;
+	try
+	{
+		_o_ = _vx_read_(_vx_stdin_);
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+	return _o_;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxCon.prototype.inline = function(_csc_)
+{
+	var _o_ = null;
+	try
+	{
+		_o_ = _vx_inline_(_csc_?_csc_:"");
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+	return _o_;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxCon.prototype.system = function(_csc_)
+{
+	if(!_csc_)
+		throw new ReferenceError("cannot call system on null");
+	var _o_ = null;
+	try
+	{
+		_o_ = _vxw_system_(_csc_);
+	}
+	catch(err)
+	{
+		vxErrorMessage(err);
+	}
+	return _o_;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxConIncluded = true;
+////////////////////////////////////////////////////////////////////////////////////////

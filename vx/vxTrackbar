@@ -1,0 +1,43 @@
+///////////////////////////////////////////////////////////////////////////////////////
+vxTrackbarIncluded = false;
+///////////////////////////////////////////////////////////////////////////////////////
+function vxTrackbar(_str_, _x_, _y_, _w_, _h_)
+{
+	this.vxType = "vxTrackbar";
+	this.hwnd		= null;
+	this.font		= null;
+	this.style		= null;
+	this.parentHwnd	= null;
+	this.str 		= new String(_str_?_str_:"");
+	//this.id 		= _id_?	_id_:	0;
+	this.id			= vxUniqueNumber();
+	this.x 			= _x_?	_x_:	0;
+	this.y 			= _y_?	_y_:	0;
+	this.width 		= _w_?	_w_:	80;
+	this.height 	= _h_?	_h_:	25;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxTrackbar.prototype.isActivated = function()
+{
+	return (_vxw_hwnd_() == this.parentHwnd) && (_vxw_wparam_() == this.id);
+}
+vxTrackbar.prototype.getValue = function()
+{
+	if(!this.hwnd)
+		throw new Error("no window handle found in vxTrackbar.getValue");
+	
+	return _vxw_send_message_(this.hwnd, vxGetPos, 0, 0);
+}
+vxTrackbar.prototype.setValue = function(_v_)
+{
+	if(!this.hwnd)
+		throw new Error("no window handle found in vxTrackbar.setValue");
+	
+	return _vxw_send_message_(this.hwnd, vxSetPos, 1, _v_);
+}
+vxTrackbar.prototype.setStyle = function(_s_)
+{
+	this.style = _s_;
+	return this;
+}
+///////////////////////////////////////////////////////////////////////////////////////

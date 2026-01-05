@@ -1,0 +1,69 @@
+///////////////////////////////////////////////////////////////////////////////////////
+vxLabelIncluded = false;
+///////////////////////////////////////////////////////////////////////////////////////
+function vxLabel(_str_, _x_, _y_, _w_, _h_)
+{
+	this.vxType		= "vxLabel";
+	this.hwnd		= null;
+	this.font		= null;
+	this.style		= null;
+	this.parentHwnd	= null;
+	this.str 		= new String(_str_?_str_:"");
+	//this.id 		= _id_?	_id_:	0;
+	this.id			= vxUniqueNumber();
+	this.x 			= _x_?	_x_:	0;
+	this.y 			= _y_?	_y_:	0;
+	this.width 		= _w_?	_w_:	80;
+	this.height 	= _h_?	_h_:	18;
+	return;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxLabel.prototype.getText = function(_n_)
+{
+	if(!this.hwnd)
+		throw new Error("no window handle found in vxLabel.getText");
+	
+	_x_ = _vx_alloc_(_n_?_n_:1024);
+	if(!_x_)
+		throw new Error("failed allocation in vxLabel.getText");
+	_vxw_send_message_(this.hwnd, 0x000D, (_n_?_n_:1024), _x_);
+	this.str = _vx_get_string_(_x_);
+	_vx_free_(_x_);
+	return this.str;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxLabel.prototype.setText = function(_str_, _n_)
+{
+	if(!this.hwnd)
+		throw new Error("no window handle found in vxLabel.setText");
+	
+	this.str = _str_?_str_:"";
+	_x_ = _vx_alloc_(_n_?_n_:1024);
+	if(!_x_)
+		throw new Error("failed allocation in vxLabel.getText");
+	_vx_put_string_(_x_, this.str);
+	_vxw_send_message_(this.hwnd, 0x000C, 0, _x_);
+	_vx_free_(_x_);
+	return;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxLabel.prototype.setFont = function(_w_, _h_, _str_)
+{
+	if(!this.hwnd)
+		throw new Error("no window handle found in vxLabel.setFont");
+	
+	this.font = _vxw_create_font_((_h_?_h_:18),
+									(_w_?_w_:9),
+									(_str_?new String(_str_):"courier new"));
+	_vxw_send_message_(this.hwnd, 0x0030, this.font, true);
+	return true;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxLabel.prototype.setStyle = function(_style_)
+{
+	this.style = _style_;
+	return this;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+vxLabelIncluded = true;
+///////////////////////////////////////////////////////////////////////////////////////

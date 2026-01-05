@@ -1,0 +1,60 @@
+vxSoundIncluded = false;
+
+function vxSound(_d_, _a_, _v_)
+{
+	this.vxType = "vxSound";
+	this.volume = _v_?_v_:1000;
+	this.dir = "\""+_d_+"\"";
+	this.alias = _a_?_a_:this.dir;
+	this.type = this.dir.endsWith(".mp3")?"mpegvideo":
+				(this.dir.endsWith(".wav")?"waveaudio":"");
+	this.open();
+	this.setVolume(this.volume);
+}
+vxSound.prototype.open = function()
+{
+	_vxw_mci_("open " + this.dir + " type "+ this.type + " alias " + this.alias);
+	return this;
+}
+vxSound.prototype.close = function()
+{
+	return _vxw_mci_("close " + this.alias);
+}
+vxSound.prototype.start = function(_a_, _b_)
+{
+	_vxw_mci_("play " + this.alias + (_a_?" from " + _a_:" from 0") + (_b_?" to " + _b_:""));
+	return this;
+}
+vxSound.prototype.stop = function()
+{
+	_vxw_mci_("stop " + this.alias);
+	return this;
+}
+vxSound.prototype.rewind = function()
+{
+	this.close();
+	this.open();
+	return this;
+}
+vxSound.prototype.pause = function()
+{
+	_vxw_mci_("pause " + this.alias);
+	return this;
+}
+vxSound.prototype.resume = function()
+{
+	_vxw_mci_("resume " + this.alias);
+	return this;
+}
+vxSound.prototype.setVolume = function(_v_)
+{
+	this.volume = _v_?_v_:0;
+	this.volume > 1000? this.volume = 1000:0;
+	_vxw_mci_("setaudio " + this.alias + " volume to " + this.volume);
+	return this;
+}
+vxSound.prototype.getVolume = function()
+{
+	return this.volume;
+}
+vxSoundIncluded = true;

@@ -1,0 +1,214 @@
+////////////////////////////////////////////////////////////////////////////////////////
+//
+//		An object that simulates keyboard input.
+//
+////////////////////////////////////////////////////////////////////////////////////////
+vxKeyboardIncluded = false;
+////////////////////////////////////////////////////////////////////////////////////////
+function vxKeyboard()
+{
+	this.vxType = "vxKeyboard";
+	this.extendedKey = 0x0001;
+	this.upKey = 0x0002;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxKeyboard.prototype.keyDown = function(key)
+{
+	_vxw_keyboard_event_(key, 0, 0);
+	return;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxKeyboard.prototype.keyUp = function(key)
+{
+	_vxw_keyboard_event_(key, 0, this.upKey);
+	return;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxKeyboard.prototype.keyType = function(key)
+{
+	_vxw_keyboard_event_(key, 0, 0);
+	_vxw_keyboard_event_(key, 0, this.upKey);
+	return;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxKeyboard.prototype.keyString = function(str)
+{
+	for(var i = 0; i < str.length; i++)
+		this.keyType(this.keyCode(str[i]));
+	return;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxKeyboard.prototype.keyCode = function(x)
+{
+	var z = x.toLowerCase();
+	var retval = 0;
+	
+	switch(z)
+	{
+		case '0':
+			retval = 0x30;
+			break;
+		case '1':
+			retval = 0x31;
+			break;
+		case '2':
+			retval = 0x32;
+			break;
+		case '3':
+			retval = 0x33;
+			break;
+		case '4':
+			retval = 0x34;
+			break;
+		case '5':
+			retval = 0x35;
+			break;
+		case '6':
+			retval = 0x36;
+			break;
+		case '7':
+			retval = 0x37;
+			break;
+		case '8':
+			retval = 0x38;
+			break;
+		case '9':
+			retval = 0x39;
+			break;
+		case 'a':
+			retval = 0x41;
+			break;
+		case 'b':
+			retval = 0x42;
+			break;
+		case 'c':
+			retval = 0x43;
+			break;
+		case 'd':
+			retval = 0x44;
+			break;
+		case 'e':
+			retval = 0x45;
+			break;
+		case 'f':
+			retval = 0x46;
+			break;
+		case 'g':
+			retval = 0x47;
+			break;
+		case 'h':
+			retval = 0x48;
+			break;
+		case 'i':
+			retval = 0x49;
+			break;
+		case 'j':
+			retval = 0x4A;
+			break;
+		case 'k':
+			retval = 0x4B;
+			break;
+		case 'l':
+			retval = 0x4C;
+			break;
+		case 'm':
+			retval = 0x4D;
+			break;
+		case 'n':
+			retval = 0x4E;
+			break;
+		case 'o':
+			retval = 0x4F;
+			break;
+		case 'p':
+			retval = 0x50;
+			break;
+		case 'q':
+			retval = 0x51;
+			break;
+		case 'r':
+			retval = 0x52;
+			break;
+		case 's':
+			retval = 0x53;
+			break;
+		case 't':
+			retval = 0x54;
+			break;
+		case 'u':
+			retval = 0x55;
+			break;
+		case 'v':
+			retval = 0x56;
+			break;
+		case 'w':
+			retval = 0x57;
+			break;
+		case 'x':
+			retval = 0x58;
+			break;
+		case 'y':
+			retval = 0x59;
+			break;
+		case 'z':
+			retval = 0x5A;
+			break;
+		case "caps" ||
+				"capslock"||
+				"caps_lock":
+			retval = 0x14;
+			break;
+		case "back"||
+				"backspace"||
+				"back_space":
+			retval = 0x8;
+			break;
+		case "shift":
+			retval = 0x10;
+			break;
+		case "control"||
+				"ctrl":
+			retval = 0x11;
+			break;
+		case "alt":
+			retval = 0x12;
+			break;
+		case "space":
+			retval = 0x20;
+			break;
+		case "delete"||
+				"del":
+			retval = 0x2E;
+			break;
+		case "tab":
+			retval = 0x9;
+			break;
+		case "enter"||
+				"return":
+			retval = 0x0D;
+			break;
+		case "left"||
+				"arrowleft":
+			retval = 0x25;
+			break;
+		case "up"||
+				"arrowup":
+			retval = 0x26;
+			break;
+		case "right"||
+				"arrowright":
+			retval = 0x27;
+			break;
+		case "down"||
+				"arrowdown":
+			retval = 0x28;
+			break;
+		default:
+			reval = 0;
+	}
+	
+	return retval;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+vxKeyboardIncluded = true;
+////////////////////////////////////////////////////////////////////////////////////////
